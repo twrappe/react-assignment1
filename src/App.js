@@ -19,19 +19,22 @@ class App extends Component {
    return axios.post('http://localhost:5000/users', character)
     .then(function (response) {
       console.log(response);
-      return (response.status === 200);
+      response.status = 201;
+      return response.data;
     })
     .catch(function (error) {
       console.log(error);
       return false;
     });
  }
+
   state = {
     characters : [],
   }
   removeCharacter = index => {
     const { characters } = this.state
-
+    var baggage = characters[index]
+    axios.delete('http://localhost:5000/users/'+baggage.id);
     this.setState({
       characters: characters.filter((character, i) => {
         return i !== index
