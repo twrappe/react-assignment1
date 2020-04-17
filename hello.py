@@ -1,9 +1,9 @@
-from flask import Flask
-from flask import request
-from flask_cors import CORS
-
+from flask import *
+from flask_cors import CORS, cross_origin
+import random
 app = Flask(__name__)
 CORS(app)
+
 users = {
    'users_list' :
    [
@@ -34,6 +34,11 @@ users = {
       }
    ]
 }
+def generate_id(userToAdd, strlen):
+    chars = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
+    _id = ''.join(random.choice(chars) for _ in range(strlen))
+    userToAdd['id'] = _id
+    return userToAdd
 @app.route('/users', methods=['GET', 'POST'])
 def get_users():
    if request.method == 'GET':
@@ -52,10 +57,10 @@ def get_users():
       return users
    elif request.method == 'POST':
       userToAdd = request.get_json()
+      userToAdd = generate_id(userToAdd, 6)
       users['users_list'].append(userToAdd)
       resp = jsonify(success=True)
-      #resp.status_code = 200 #optionally, you can always set a response code.
-      # 200 is the default code for a normal response
+      #resp.status_code = 201
       return resp
 @app.route('/users/<id>', methods=['GET', 'DELETE'])
 def get_user(id):
